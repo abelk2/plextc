@@ -1,0 +1,13 @@
+# IDEA
+.idea
+out/
+
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+
+# JVM
+hs_err_pid*
+replay_pid*
+*.hprof
