@@ -35,6 +35,12 @@ If anything matching appears, it will clear the file that contains the episode i
 | plextc.moviesRootDirectory   | true     | -                | The root directory of the movies library.                                        |
 | plextc.seriesRootDirectory   | true     | -                | The root directory of the series library.                                        |
 
+Properties are read from the following locations (in the same priority order):
+1. Environment variables (in format `PLEXTC_videoFileExtensions`)
+2. System properties (i.e. `-Dplextc.videoFileExtensions`)
+3. `plextc.properties` placed next to JAR
+4. `plextc.properties` on classpath
+
 ## Warning, license
 
 This program will **permanently delete** matched files as described above. Use at on your own risk! No warranty and support provided.
