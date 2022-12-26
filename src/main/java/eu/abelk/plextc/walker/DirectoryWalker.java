@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 
 import java.nio.file.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,10 +24,14 @@ public class DirectoryWalker {
 
     @SneakyThrows
     public void walk(PathVisitor fileVisitor) {
+        Set<Path> mathingPaths;
         try (Stream<Path> stream = Files.walk(rootPath)) {
-            stream.filter(this::matchesAnyGlob)
-                .forEach(fileVisitor::visit);
+            mathingPaths = stream.filter(this::matchesAnyGlob)
+                .collect(Collectors.toSet());
         }
+        mathingPaths.stream()
+            .filter(path -> path.toFile().exists())
+            .forEach(fileVisitor::visit);
     }
 
     private boolean matchesAnyGlob(Path path) {
