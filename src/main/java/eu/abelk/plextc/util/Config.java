@@ -20,4 +20,10 @@ public interface Config {
     @NotNull
     String plexVersionName();
 
+    @NotNull
+    String loggingPath();
+
+    @NotNull
+    String loggingLevel();
+
 }

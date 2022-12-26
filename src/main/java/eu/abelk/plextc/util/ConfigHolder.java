@@ -34,6 +34,8 @@ public enum ConfigHolder {
         this.config = builder.loadFrom(SystemPropertiesSource.withPrefix(PROPERTY_PREFIX))
             .loadFrom(EnvvarSource.withPrefix(PROPERTY_PREFIX.toUpperCase(Locale.ROOT)))
             .build();
+
+        LoggingConfigurer.configureLogging(config);
     }
 
     public static Config getConfig() {

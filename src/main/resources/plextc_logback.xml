@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE_MOVIES" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${plextc.loggingPath}/movies.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>movies.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE_SERIES" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${plextc.loggingPath}/series.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>series.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="eu.abelk.plextc.remover.TranscodedOriginalMovieRemover" level="${plextc.loggingLevel}" additivity="true">
+        <appender-ref ref="FILE_MOVIES"/>
+    </logger>
+    <logger name="eu.abelk.plextc.remover.TranscodedOriginalSeriesEpisodeRemover" level="${plextc.loggingLevel}" additivity="true">
+        <appender-ref ref="FILE_SERIES"/>
+    </logger>
+    <root level="${plextc.loggingLevel}">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
