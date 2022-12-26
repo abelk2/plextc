@@ -22,8 +22,12 @@ public class TranscodedOriginalSeriesEpisodeRemover {
         + "/S??E??.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
 
     public void start() {
-        processExisting();
-        startWatcher();
+        try {
+            processExisting();
+            startWatcher();
+        } catch (Throwable throwable) {
+            log.error("Unexpected exception.", throwable);
+        }
     }
 
     private void processExisting() {
