@@ -1,5 +1,7 @@
 package eu.abelk.plextc.remover;
 
+import eu.abelk.plextc.util.Config;
+import eu.abelk.plextc.util.ConfigHolder;
 import eu.abelk.plextc.util.Util;
 import eu.abelk.plextc.walker.DirectoryWalker;
 import eu.abelk.plextc.watcher.DirectoryWatcher;
@@ -11,10 +13,12 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import static eu.abelk.plextc.util.Constants.*;
-
 @Slf4j
 public class TranscodedOriginalMovieRemover {
+
+    private static final Config CONFIG = ConfigHolder.getConfig();
+    public static final String TRANSCODED_MOVIES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
+        + "/?*.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
 
     public void start() {
         processExisting();
@@ -23,7 +27,7 @@ public class TranscodedOriginalMovieRemover {
 
     private void processExisting() {
         log.info("Processing existing transcoded movies...");
-        DirectoryWalker walker = new DirectoryWalker(ROOT_DIRECTORY, TRANSCODED_MOVIES_GLOB);
+        DirectoryWalker walker = new DirectoryWalker(CONFIG.moviesRootDirectory(), TRANSCODED_MOVIES_GLOB);
         walker.walk(this::removeOriginalFiles);
         log.info("Finished processing existing transcoded movies.");
     }
@@ -31,7 +35,7 @@ public class TranscodedOriginalMovieRemover {
     @SneakyThrows
     private void startWatcher() {
         log.info("Watching new transcoded movies...");
-        DirectoryWatcher watcher = new DirectoryWatcher(ROOT_DIRECTORY, TRANSCODED_MOVIES_GLOB);
+        DirectoryWatcher watcher = new DirectoryWatcher(CONFIG.moviesRootDirectory(), TRANSCODED_MOVIES_GLOB);
         watcher.register((transcodedFilePath, changeType) -> {
             if (changeType == FileChangeType.CREATE) {
                 removeOriginalFiles(transcodedFilePath);

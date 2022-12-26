@@ -1,5 +1,7 @@
 package eu.abelk.plextc.remover;
 
+import eu.abelk.plextc.util.Config;
+import eu.abelk.plextc.util.ConfigHolder;
 import eu.abelk.plextc.util.Util;
 import eu.abelk.plextc.walker.DirectoryWalker;
 import eu.abelk.plextc.watcher.DirectoryWatcher;
@@ -12,10 +14,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static eu.abelk.plextc.util.Constants.*;
-
 @Slf4j
 public class TranscodedOriginalSeriesEpisodeRemover {
+
+    private static final Config CONFIG = ConfigHolder.getConfig();
+    public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
+        + "/S??E??.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
 
     public void start() {
         processExisting();
@@ -24,7 +28,7 @@ public class TranscodedOriginalSeriesEpisodeRemover {
 
     private void processExisting() {
         log.info("Processing existing transcoded series episodes...");
-        DirectoryWalker walker = new DirectoryWalker(ROOT_DIRECTORY_SERIES, TRANSCODED_EPISODES_GLOB);
+        DirectoryWalker walker = new DirectoryWalker(CONFIG.seriesRootDirectory(), TRANSCODED_EPISODES_GLOB);
         walker.walk(this::removeMatchingOriginalFile);
         log.info("Finished processing existing transcoded series episodes.");
     }
@@ -32,7 +36,7 @@ public class TranscodedOriginalSeriesEpisodeRemover {
     @SneakyThrows
     private void startWatcher() {
         log.info("Watching new transcoded series episodes...");
-        DirectoryWatcher watcher = new DirectoryWatcher(ROOT_DIRECTORY_SERIES, TRANSCODED_EPISODES_GLOB);
+        DirectoryWatcher watcher = new DirectoryWatcher(CONFIG.seriesRootDirectory(), TRANSCODED_EPISODES_GLOB);
         watcher.register((transcodedFilePath, changeType) -> {
             if (changeType == FileChangeType.CREATE) {
                 removeMatchingOriginalFile(transcodedFilePath);
@@ -64,7 +68,5 @@ public class TranscodedOriginalSeriesEpisodeRemover {
             }
         }
     }
-
-
 
 }
