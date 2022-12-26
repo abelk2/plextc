@@ -1,4 +1,4 @@
-package eu.abelk.plexcleaner.util;
+package eu.abelk.plextc.util;
 
 import java.util.Set;
 

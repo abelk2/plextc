@@ -1,4 +1,4 @@
-package eu.abelk.plexcleaner.walker;
+package eu.abelk.plextc.walker;
 
 import lombok.SneakyThrows;
 

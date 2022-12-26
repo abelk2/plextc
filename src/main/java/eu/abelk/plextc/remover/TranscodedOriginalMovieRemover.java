@@ -1,9 +1,9 @@
-package eu.abelk.plexcleaner.remover;
+package eu.abelk.plextc.remover;
 
-import eu.abelk.plexcleaner.util.Util;
-import eu.abelk.plexcleaner.walker.DirectoryWalker;
-import eu.abelk.plexcleaner.watcher.DirectoryWatcher;
-import eu.abelk.plexcleaner.watcher.FileChangeType;
+import eu.abelk.plextc.util.Util;
+import eu.abelk.plextc.walker.DirectoryWalker;
+import eu.abelk.plextc.watcher.DirectoryWatcher;
+import eu.abelk.plextc.watcher.FileChangeType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +11,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import static eu.abelk.plexcleaner.util.Constants.*;
+import static eu.abelk.plextc.util.Constants.*;
 
 @Slf4j
 public class TranscodedOriginalMovieRemover {

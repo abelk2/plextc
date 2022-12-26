@@ -2,7 +2,7 @@ plugins {
     id "java"
 }
 
-group "org.example"
+group "eu.abelk.plextc"
 
 wrapper {
     gradleVersion "7.6"
@@ -23,9 +23,8 @@ dependencies {
 
 jar {
     manifest {
-        attributes "Main-Class": "eu.abelk.plexwatcher.Main"
+        attributes "Main-Class": "eu.abelk.plextc.Main"
     }
-
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }

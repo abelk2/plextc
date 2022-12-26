@@ -1,6 +1,6 @@
-package eu.abelk.plexcleaner;
+package eu.abelk.plextc;
 
-import eu.abelk.plexcleaner.remover.TranscodedOriginalMovieRemover;
+import eu.abelk.plextc.remover.TranscodedOriginalMovieRemover;
 
 public class Main {
 

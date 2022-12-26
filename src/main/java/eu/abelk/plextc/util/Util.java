@@ -1,8 +1,8 @@
-package eu.abelk.plexcleaner.util;
+package eu.abelk.plextc.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static eu.abelk.plexcleaner.util.Constants.VIDEO_FILE_EXTENSIONS;
+import static eu.abelk.plextc.util.Constants.VIDEO_FILE_EXTENSIONS;
 
 @Slf4j
 public class Util {

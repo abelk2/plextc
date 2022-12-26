@@ -1,4 +1,4 @@
-package eu.abelk.plexcleaner.watcher;
+package eu.abelk.plextc.watcher;
 
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
