@@ -19,14 +19,14 @@ public class DirectoryWatcher {
     private final List<PathMatcher> matchers;
     private final List<FileChangeListener> listeners;
 
-    public DirectoryWatcher(String dir, String... globs) throws IOException {
+    public DirectoryWatcher(String rootDirectory, String... globs) throws IOException {
         this.watchService = FileSystems.getDefault().newWatchService();
         this.watchKeys = new HashMap<>();
         this.matchers = Arrays.stream(globs)
             .map(glob -> FileSystems.getDefault().getPathMatcher("glob:" + glob))
             .collect(Collectors.toList());
         this.listeners = new LinkedList<>();
-        registerAll(Paths.get(dir));
+        registerAll(Paths.get(rootDirectory));
     }
 
     public void register(FileChangeListener listener) {
