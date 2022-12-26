@@ -55,6 +55,10 @@ public class TranscodedOriginalMovieRemover {
             Arrays.stream(files)
                 .forEach(file -> {
                     log.info("Deleting file\n\tLocation: {}", file);
+                    boolean successful = file.delete();
+                    if (!successful) {
+                        log.error("Failed to delete file\n\tLocation: {}", file);
+                    }
                 });
         }
     }
