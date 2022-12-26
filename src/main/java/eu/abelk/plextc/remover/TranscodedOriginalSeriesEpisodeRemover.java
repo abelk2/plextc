@@ -19,7 +19,7 @@ public class TranscodedOriginalSeriesEpisodeRemover {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
     public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
-        + "/S??E??.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
+        + "/[sS]??[eE]??.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
 
     public void start() {
         try {
