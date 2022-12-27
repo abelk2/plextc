@@ -29,10 +29,10 @@
         </encoder>
     </appender>
 
-    <logger name="eu.abelk.plextc.remover.TranscodedOriginalMovieRemover" level="${plextc.loggingLevel}" additivity="true">
+    <logger name="eu.abelk.plextc.replacer.TranscodedOriginalMovieReplacer" level="${plextc.loggingLevel}" additivity="true">
         <appender-ref ref="FILE_MOVIES"/>
     </logger>
-    <logger name="eu.abelk.plextc.remover.TranscodedOriginalSeriesEpisodeRemover" level="${plextc.loggingLevel}" additivity="true">
+    <logger name="eu.abelk.plextc.replacer.TranscodedOriginalSeriesEpisodeReplacer" level="${plextc.loggingLevel}" additivity="true">
         <appender-ref ref="FILE_SERIES"/>
     </logger>
     <root level="${plextc.loggingLevel}">

@@ -1,4 +1,4 @@
-package eu.abelk.plextc.remover;
+package eu.abelk.plextc.replacer;
 
 import eu.abelk.plextc.util.Config;
 import eu.abelk.plextc.util.ConfigHolder;
@@ -10,12 +10,14 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class TranscodedOriginalSeriesEpisodeRemover {
+public class TranscodedOriginalSeriesEpisodeReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
     public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
@@ -33,7 +35,7 @@ public class TranscodedOriginalSeriesEpisodeRemover {
     private void processExisting() {
         log.info("Processing existing transcoded series episodes...");
         DirectoryWalker walker = new DirectoryWalker(CONFIG.seriesRootDirectory(), TRANSCODED_EPISODES_GLOB);
-        walker.walk(this::removeMatchingOriginalFile);
+        walker.walk(this::replaceMatchingOriginalFile);
         log.info("Finished processing existing transcoded series episodes.");
     }
 
@@ -43,13 +45,14 @@ public class TranscodedOriginalSeriesEpisodeRemover {
         DirectoryWatcher watcher = new DirectoryWatcher(CONFIG.seriesRootDirectory(), TRANSCODED_EPISODES_GLOB);
         watcher.register((transcodedFilePath, changeType) -> {
             if (changeType == FileChangeType.CREATE) {
-                removeMatchingOriginalFile(transcodedFilePath);
+                replaceMatchingOriginalFile(transcodedFilePath);
             }
         });
         watcher.start();
     }
 
-    private void removeMatchingOriginalFile(Path transcodedFilePath) {
+    @SneakyThrows
+    private void replaceMatchingOriginalFile(Path transcodedFilePath) {
         Path originalFileDirectory = transcodedFilePath.resolve("../../..").normalize();
         String transcodedFileBaseName = Util.getFileBaseName(transcodedFilePath);
         log.info("Found transcoded series episode\n\tLocation: {}\n\tOriginal dir: {}\n\tBase name: {}",
@@ -58,22 +61,22 @@ public class TranscodedOriginalSeriesEpisodeRemover {
             .listFiles((directory, name) -> Util.containsIgnoreCase(name, transcodedFileBaseName));
         if (files == null) {
             log.error("Listing files in {} failed.", originalFileDirectory);
+        } else if (files.length < 1) {
+            Path destination = originalFileDirectory.resolve(transcodedFilePath.getFileName());
+            log.info("No matching episode in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                transcodedFilePath, destination);
+            Files.move(transcodedFilePath, destination);
+        } else if (files.length > 1) {
+            String matches = Arrays.stream(files)
+                .map(File::toString)
+                .collect(Collectors.joining("\n\t"));
+            log.error("Not moving anything, more than one original files match for base name {}; files: {}",
+                transcodedFileBaseName, matches);
         } else {
-            if (files.length > 1) {
-                String matches = Arrays.stream(files)
-                    .map(File::toString)
-                    .collect(Collectors.joining("\n\t"));
-                log.error("More than one original files match for base name {}; files: {}", transcodedFileBaseName, matches);
-            } else {
-                Arrays.stream(files)
-                    .forEach(file -> {
-                        log.info("Deleting file\n\tLocation: {}", file);
-                        boolean successful = file.delete();
-                        if (!successful) {
-                            log.error("Failed to delete file\n\tLocation: {}", file);
-                        }
-                    });
-            }
+            File matchingFile = files[0];
+            log.info("Found episode in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                transcodedFilePath, matchingFile.toPath());
+            Files.move(transcodedFilePath, matchingFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

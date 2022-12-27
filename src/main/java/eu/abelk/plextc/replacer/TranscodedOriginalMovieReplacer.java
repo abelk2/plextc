@@ -1,4 +1,4 @@
-package eu.abelk.plextc.remover;
+package eu.abelk.plextc.replacer;
 
 import eu.abelk.plextc.util.Config;
 import eu.abelk.plextc.util.ConfigHolder;
@@ -10,11 +10,13 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 @Slf4j
-public class TranscodedOriginalMovieRemover {
+public class TranscodedOriginalMovieReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
     public static final String TRANSCODED_MOVIES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
@@ -32,7 +34,7 @@ public class TranscodedOriginalMovieRemover {
     private void processExisting() {
         log.info("Processing existing transcoded movies...");
         DirectoryWalker walker = new DirectoryWalker(CONFIG.moviesRootDirectory(), TRANSCODED_MOVIES_GLOB);
-        walker.walk(this::removeOriginalFiles);
+        walker.walk(this::replaceOrRemoveOriginalFiles);
         log.info("Finished processing existing transcoded movies.");
     }
 
@@ -42,21 +44,32 @@ public class TranscodedOriginalMovieRemover {
         DirectoryWatcher watcher = new DirectoryWatcher(CONFIG.moviesRootDirectory(), TRANSCODED_MOVIES_GLOB);
         watcher.register((transcodedFilePath, changeType) -> {
             if (changeType == FileChangeType.CREATE) {
-                removeOriginalFiles(transcodedFilePath);
+                replaceOrRemoveOriginalFiles(transcodedFilePath);
             }
         });
         watcher.start();
     }
 
-    private void removeOriginalFiles(Path transcodedFilePath) {
+    @SneakyThrows
+    private void replaceOrRemoveOriginalFiles(Path transcodedFilePath) {
         Path originalFileDirectory = transcodedFilePath.resolve("../../..").normalize();
         log.info("Found transcoded movie\n\tLocation: {}\n\tOriginal dir: {}", transcodedFilePath, originalFileDirectory);
         File[] files = originalFileDirectory.toFile()
             .listFiles((directory, name) -> Util.isVideoFile(name));
         if (files == null) {
             log.error("Listing files in {} failed.", originalFileDirectory);
+        } else if (files.length < 1) {
+            Path destination = originalFileDirectory.resolve(transcodedFilePath.getFileName());
+            log.info("No movies in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                transcodedFilePath, destination);
+            Files.move(transcodedFilePath, destination);
         } else {
+            File firstFile = files[0];
+            log.info("Found movies in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                transcodedFilePath, firstFile.toPath());
+            Files.move(transcodedFilePath, firstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Arrays.stream(files)
+                .skip(1)
                 .forEach(file -> {
                     log.info("Deleting file\n\tLocation: {}", file);
                     boolean successful = file.delete();
