@@ -46,6 +46,6 @@ Properties are read from the following locations (in the same priority order):
 
 ## Warning, license
 
-This program will **permanently delete** matched files as described above. Use at your own risk! No warranty and support provided.
+This program will **permanently delete** original versions of movies/episodes by replacing them as described above. Use at your own risk! No warranty and support provided.
 
 Licensed under the [MIT license](https://spdx.org/licenses/MIT.html)
