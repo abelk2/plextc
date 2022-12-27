@@ -1,7 +1,7 @@
 # Plex Transcode Cleaner
 
 ## What's this
-Cleans up the original versions of movies and series from your Plex libraries.
+Replaces the original versions of movies and series episodes in your Plex libraries with their transcoded versions made by Plex.
 
 This action is performed on launch, and also when changes are detected in the libraries (via filesystem watch).
 
@@ -12,18 +12,21 @@ and the optimized versions should be configured to be stored at the same locatio
 Some Plex clients do not automatically pick the version of movies/episodes that is the most suitable for them.
 Instead, you're prompted to choose one. Every single time.
 
-This is a hacky solution that clears the original version when a version optimized by Plex appears. So only the optimized version will exist.
+This is a hacky solution that replaces the original version with its optimized version when it appears at the expected location.
+So only the optimized version will exist.
 
 ## Behavior
 ### For movies
 The app will watch files in the base dir `${plextc.moviesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/?*.{mkv,mp4,avi}` by default.
-If anything matching appears, it will clear all video files in the directory of the original movie
-(i.e. in the directory where `Plex Versions` resides).
+If anything matching appears, it will replace the first video in the directory of the original movie (i.e. in the directory where `Plex Versions` resides),
+and delete the rest of the video files. If nothing matches, it will just move the optimized movie to the
+mentioned directory without replacing anything.
 
 ### For series
 The app will watch files in the base dir `${plextc.seriesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/S??E??.{mkv,mp4,avi}` by default.
-If anything matching appears, it will clear the file that contains the episode identifier (e.g. `S01E02`) in the directory of the original series
-(i.e. in the directory where `Plex Versions` resides).
+If anything matching appears, it will replace the file that contains the episode identifier (e.g. `S01E02`) in the directory of the original series
+(i.e. in the directory where `Plex Versions` resides) with the optimized version. If nothing matches, it will just move the optimized movie to the
+mentioned directory without replacing anything.
 
 ## Configuration
 | Config key                   | Required | Default          | Description                                                                      |
