@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class TranscodedOriginalSeriesEpisodeReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
-    public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/[sS]??[eE]??.mp4";
+    public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/**/[sS]??[eE]??.mp4";
 
     public void start() {
         try {
