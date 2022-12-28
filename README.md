@@ -23,7 +23,7 @@ and delete the rest of the video files. If nothing matches, it will just move th
 mentioned directory without replacing anything.
 
 ### For series
-The app will watch files in the base dir `${plextc.seriesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/[sS]??[eE]??.mp4` by default.
+The app will watch files in the base dir `${plextc.seriesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/**/[sS]??[eE]??.mp4` by default.
 If anything matching appears, it will replace the file that contains the episode identifier (e.g. `S01E02`) in the directory of the original series
 (i.e. in the directory where `Plex Versions` resides) with the optimized version. If nothing matches, it will just move the optimized movie to the
 mentioned directory without replacing anything.
