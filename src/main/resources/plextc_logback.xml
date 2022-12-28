@@ -9,7 +9,7 @@
     <appender name="FILE_MOVIES" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${plextc.loggingPath}/movies.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>movies.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${plextc.loggingPath}/movies.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
@@ -20,7 +20,7 @@
     <appender name="FILE_SERIES" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${plextc.loggingPath}/series.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>series.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${plextc.loggingPath}/series.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>200MB</totalSizeCap>
         </rollingPolicy>
