@@ -19,8 +19,7 @@ import java.util.Arrays;
 public class TranscodedOriginalMovieReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
-    public static final String TRANSCODED_MOVIES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
-        + "/?*.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
+    public static final String TRANSCODED_MOVIES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/?*.mp4";
 
     public void start() {
         try {
@@ -64,10 +63,18 @@ public class TranscodedOriginalMovieReplacer {
                 transcodedFilePath, destination);
             Files.move(transcodedFilePath, destination);
         } else {
-            File firstFile = files[0];
-            log.info("Found movies in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
-                transcodedFilePath, firstFile.toPath());
-            Files.move(transcodedFilePath, firstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Path firstFilePath = files[0].toPath();
+            if (Util.isMp4(firstFilePath)) {
+                log.info("Found movies in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                    transcodedFilePath, firstFilePath);
+                Files.move(transcodedFilePath, firstFilePath, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(firstFilePath) + ".mp4");
+                log.info("Found movies in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
+                    transcodedFilePath, pathWithChangedExtension);
+                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING);
+                Files.delete(firstFilePath);
+            }
             Arrays.stream(files)
                 .skip(1)
                 .forEach(file -> {

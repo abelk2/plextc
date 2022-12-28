@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 public class TranscodedOriginalSeriesEpisodeReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
-    public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName()
-        + "/[sS]??[eE]??.{" + String.join(",", CONFIG.videoFileExtensions()) + "}";
+    public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/[sS]??[eE]??.mp4";
 
     public void start() {
         try {
@@ -73,10 +72,18 @@ public class TranscodedOriginalSeriesEpisodeReplacer {
             log.error("Not moving anything, more than one original files match for base name {}; files: {}",
                 transcodedFileBaseName, matches);
         } else {
-            File matchingFile = files[0];
-            log.info("Found episode in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
-                transcodedFilePath, matchingFile.toPath());
-            Files.move(transcodedFilePath, matchingFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Path matchingFilePath = files[0].toPath();
+            if (Util.isMp4(matchingFilePath)) {
+                log.info("Found episode in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
+                    transcodedFilePath, matchingFilePath);
+                Files.move(transcodedFilePath, matchingFilePath, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(matchingFilePath) + ".mp4");
+                log.info("Found episode in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
+                    transcodedFilePath, pathWithChangedExtension);
+                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING);
+                Files.delete(matchingFilePath);
+            }
         }
     }
 

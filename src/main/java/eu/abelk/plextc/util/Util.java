@@ -13,6 +13,10 @@ public class Util {
     private Util() {
     }
 
+    public static boolean isMp4(Path path) {
+        return path.getFileName().toString().endsWith(".mp4");
+    }
+
     public static boolean isVideoFile(String name) {
         boolean result = CONFIG.videoFileExtensions()
             .stream()
