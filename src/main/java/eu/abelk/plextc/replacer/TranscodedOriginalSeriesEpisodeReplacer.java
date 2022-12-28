@@ -52,7 +52,7 @@ public class TranscodedOriginalSeriesEpisodeReplacer {
 
     @SneakyThrows
     private void replaceMatchingOriginalFile(Path transcodedFilePath) {
-        Path originalFileDirectory = transcodedFilePath.resolve("../../..").normalize();
+        Path originalFileDirectory = transcodedFilePath.resolve("../../../..").normalize();
         String transcodedFileBaseName = Util.getFileBaseName(transcodedFilePath);
         log.info("Found transcoded series episode\n\tLocation: {}\n\tOriginal dir: {}\n\tBase name: {}",
             transcodedFilePath, originalFileDirectory, transcodedFileBaseName);
