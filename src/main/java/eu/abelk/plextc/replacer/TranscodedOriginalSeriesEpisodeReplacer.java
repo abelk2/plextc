@@ -76,12 +76,12 @@ public class TranscodedOriginalSeriesEpisodeReplacer {
             if (Util.isMp4(matchingFilePath)) {
                 log.info("Found episode in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
                     transcodedFilePath, matchingFilePath);
-                Files.move(transcodedFilePath, matchingFilePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(transcodedFilePath, matchingFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } else {
                 Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(matchingFilePath) + ".mp4");
                 log.info("Found episode in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
                     transcodedFilePath, pathWithChangedExtension);
-                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                 Files.delete(matchingFilePath);
             }
         }

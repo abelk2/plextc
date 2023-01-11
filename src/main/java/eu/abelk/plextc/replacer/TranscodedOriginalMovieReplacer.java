@@ -67,12 +67,12 @@ public class TranscodedOriginalMovieReplacer {
             if (Util.isMp4(firstFilePath)) {
                 log.info("Found movies in original directory. Moving file\n\tFrom: {}\n\tTo: {}",
                     transcodedFilePath, firstFilePath);
-                Files.move(transcodedFilePath, firstFilePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(transcodedFilePath, firstFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } else {
                 Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(firstFilePath) + ".mp4");
                 log.info("Found movies in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
                     transcodedFilePath, pathWithChangedExtension);
-                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                 Files.delete(firstFilePath);
             }
             Arrays.stream(files)
