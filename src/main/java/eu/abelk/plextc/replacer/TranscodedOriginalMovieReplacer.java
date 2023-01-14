@@ -13,13 +13,20 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class TranscodedOriginalMovieReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
     public static final String TRANSCODED_MOVIES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/?*.mp4";
+
+    private final ScheduledExecutorService executorService;
+
+    public TranscodedOriginalMovieReplacer(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     public void start() {
         try {
@@ -69,22 +76,19 @@ public class TranscodedOriginalMovieReplacer {
                     transcodedFilePath, firstFilePath);
                 Files.move(transcodedFilePath, firstFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } else {
-                Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(firstFilePath) + ".mp4");
-                log.info("Found movies in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
-                    transcodedFilePath, pathWithChangedExtension);
-                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-                Files.delete(firstFilePath);
+                executorService.schedule(() -> replaceOriginalFileWithExtensionChange(transcodedFilePath, originalFileDirectory, firstFilePath),
+                    CONFIG.extensionChangeReplaceDelayMinutes(), TimeUnit.MINUTES);
             }
-            Arrays.stream(files)
-                .skip(1)
-                .forEach(file -> {
-                    log.info("Deleting file\n\tLocation: {}", file);
-                    boolean successful = file.delete();
-                    if (!successful) {
-                        log.error("Failed to delete file\n\tLocation: {}", file);
-                    }
-                });
         }
+    }
+
+    @SneakyThrows
+    private void replaceOriginalFileWithExtensionChange(Path transcodedFilePath, Path originalFileDirectory, Path firstFilePath) {
+        Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(firstFilePath) + ".mp4");
+        log.info("Found movies in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
+            transcodedFilePath, pathWithChangedExtension);
+        Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        Files.delete(firstFilePath);
     }
 
 }

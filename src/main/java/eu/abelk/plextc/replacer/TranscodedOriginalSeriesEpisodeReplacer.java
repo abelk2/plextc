@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,6 +23,12 @@ public class TranscodedOriginalSeriesEpisodeReplacer {
 
     private static final Config CONFIG = ConfigHolder.getConfig();
     public static final String TRANSCODED_EPISODES_GLOB = "**/Plex Versions/" + CONFIG.plexVersionName() + "/**/[sS]??[eE]??.mp4";
+
+    private final ScheduledExecutorService executorService;
+
+    public TranscodedOriginalSeriesEpisodeReplacer(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     public void start() {
         try {
@@ -78,13 +86,19 @@ public class TranscodedOriginalSeriesEpisodeReplacer {
                     transcodedFilePath, matchingFilePath);
                 Files.move(transcodedFilePath, matchingFilePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } else {
-                Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(matchingFilePath) + ".mp4");
-                log.info("Found episode in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
-                    transcodedFilePath, pathWithChangedExtension);
-                Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-                Files.delete(matchingFilePath);
+                executorService.schedule(() -> replaceOriginalFileWithExtensionChange(transcodedFilePath, originalFileDirectory, matchingFilePath),
+                    CONFIG.extensionChangeReplaceDelayMinutes(), TimeUnit.MINUTES);
             }
         }
+    }
+
+    @SneakyThrows
+    private void replaceOriginalFileWithExtensionChange(Path transcodedFilePath, Path originalFileDirectory, Path matchingFilePath) {
+        Path pathWithChangedExtension = originalFileDirectory.resolve(Util.getFileBaseName(matchingFilePath) + ".mp4");
+        log.info("Found episode in original directory. Moving file (extension change needed)\n\tFrom: {}\n\tTo: {}",
+            transcodedFilePath, pathWithChangedExtension);
+        Files.move(transcodedFilePath, pathWithChangedExtension, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        Files.delete(matchingFilePath);
     }
 
 }

@@ -1,5 +1,6 @@
 package eu.abelk.plextc.util;
 
+import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.validation.NonNullValidator.NotNull;
 
@@ -25,5 +26,9 @@ public interface Config {
 
     @NotNull
     String loggingLevel();
+
+    @NotNull
+    @Default("1")
+    int extensionChangeReplaceDelayMinutes();
 
 }
