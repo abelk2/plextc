@@ -17,16 +17,16 @@ So only the optimized version will exist.
 
 ## Behavior
 ### For movies
-The app will watch files in the base dir `${plextc.moviesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/?*.mp4` by default.
-If anything matching appears, it will replace the first video in the directory of the original movie (i.e. in the directory where `Plex Versions` resides),
-and delete the rest of the video files. If nothing matches, it will just move the optimized movie to the
-mentioned directory without replacing anything.
+The app will watch files in the base dir `${plextc.moviesRootDirectory}` matching the glob `**/Plex Versions/${plextc.plexVersionName}/?*.mp4` by default.
+If anything matching appears, it will replace the first video in the directory of the original movie (i.e. in the directory where `Plex Versions` resides). If nothing matches, it will just move the optimized movie to the mentioned directory without replacing anything.
 
 ### For series
-The app will watch files in the base dir `${plextc.seriesRootDirectory}` matching the glob `**/Plex Versions/Optimized for TV/**/[sS]??[eE]??.mp4` by default.
+The app will watch files in the base dir `${plextc.seriesRootDirectory}` matching the glob `**/Plex Versions/${plextc.plexVersionName}/**/[sS]??[eE]??.mp4` by default.
 If anything matching appears, it will replace the file that contains the episode identifier (e.g. `S01E02`) in the directory of the original series
 (i.e. in the directory where `Plex Versions` resides) with the optimized version. If nothing matches, it will just move the optimized movie to the
 mentioned directory without replacing anything.
+
+When there's an extension change (i.e. Plex remuxed the video file), it will move the converted video to the original directory, renaming it to the original file's name, but keeping the extension of the converted one. This has to be done with a few minutes delay, as Plex seemingly removes both videos if we replace it immediately.
 
 ## Configuration
 | Config key                   | Required | Default          | Description                                                                      |
@@ -37,6 +37,7 @@ mentioned directory without replacing anything.
 | plextc.loggingLevel          | true     | INFO             | The logging level of the app.                                                    |
 | plextc.moviesRootDirectory   | true     | -                | The root directory of the movies library.                                        |
 | plextc.seriesRootDirectory   | true     | -                | The root directory of the series library.                                        |
+| plextc.extensionChangeReplaceDelayMinutes | true | - | The minutes to wait before replacing an original video file with its converted version when there's an extension change.|
 
 Properties are read from the following locations (in the same priority order):
 1. Environment variables (in format `PLEXTC_videoFileExtensions`)
